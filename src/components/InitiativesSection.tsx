@@ -1,184 +1,467 @@
-import { motion } from "framer-motion";
-import { ExternalLink, Heart, Sparkles } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ExternalLink,
+  Sparkles,
+  HandHeart,
+  Handshake,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-import ploggersImg from "@/assets/ploggers.jpg";
-import socialShelfImg from "@/assets/social-shelf.jpg";
-import laalBindiImg from "@/assets/laal-bindi.jpg";
+import ploggersImg from "@/assets/ploggers.jpeg";
+import socialShelfImg from "@/assets/social-shelf.jpeg";
+import bookImg from "@/assets/books.jpeg";
+import laalBindiImg from "@/assets/laal-bindi.jpeg";
 
-/* -------------------- TYPES -------------------- */
-
-type Initiative = {
-  title: string;
-  description: string;
-  image: string;
-  tag: string;
-  badge: string;
-  hover: string;
-};
-
-/* -------------------- DATA -------------------- */
-
-const initiatives: Initiative[] = [
+const initiatives = [
   {
     title: "Sambhajinagar Ploggers",
     description:
-      "Combining fitness with environmental cleanup, Sambhajinagar Ploggers brings together citizens who jog through city streets while collecting waste, transforming daily exercise into meaningful climate action.",
-    image: ploggersImg,
+      "Combining fitness with environmental cleanup, Sambhajinagan Ploggers brings together citizens who jog through city streets while collecting waste.",
+    images: [ploggersImg, ploggersImg, ploggersImg],
     tag: "Environment",
     badge: "bg-emerald-600",
-    hover: "hover:bg-emerald-600 hover:text-white hover:border-emerald-600",
+    accentColor: "#059669",
+    link: "#",
   },
   {
     title: "Social Shelf",
     description:
-      "Social Shelf is a community-driven book-sharing initiative that creates open access to knowledge. By encouraging people to donate, exchange, and read books freely, it nurtures learning, conversation, and connection across neighborhoods.",
-    image: socialShelfImg,
+      "A community-driven book-sharing initiative creating open access to knowledge across neighborhoods.",
+    images: [socialShelfImg, socialShelfImg, bookImg],
     tag: "Education",
-    // 🔑 logo-inspired color ONLY here
     badge: "bg-[#E8A857]",
-    hover: "hover:bg-[#E8A857] hover:text-white hover:border-[#E8A857]",
+    accentColor: "#E8A857",
+    link: "#",
   },
   {
     title: "Laal Bindi",
     description:
-      "Laal Bindi is a women’s empowerment campaign that uses the red bindi as a symbol of strength, dignity, and identity. The initiative raises awareness around gender equality, safety, and women’s rights through dialogue and community action.",
-    image: laalBindiImg,
+      "A women's empowerment campaign using the red bindi as a symbol of strength, dignity, and identity.",
+    images: [laalBindiImg, laalBindiImg, laalBindiImg],
     tag: "Women Empowerment",
     badge: "bg-rose-600",
-    hover: "hover:bg-rose-600 hover:text-white hover:border-rose-600",
+    accentColor: "#e11d48",
+    link: "#",
   },
 ];
 
-/* -------------------- COMPONENT -------------------- */
+const InitiativesSection = () => {
+  const [current, setCurrent] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [imageIndex, setImageIndex] = useState(0);
 
-const InitiativesSection: React.FC = () => {
-  return (
-    <section
-      id="initiatives"
-      className="relative pt-24 pb-32 bg-gradient-to-b from-emerald-50 via-white to-emerald-100"
+  const autoplayRef = useRef(null);
+  const imageCarouselRef = useRef(null);
+  const isTransitioning = useRef(false);
+
+  const currentInitiative = initiatives[current];
+
+  // Reset image index when initiative changes
+  useEffect(() => {
+    setImageIndex(0);
+  }, [current]);
+
+  // Image carousel auto-rotation
+  useEffect(() => {
+    if (currentInitiative.images.length <= 1) {
+      if (imageCarouselRef.current) {
+        clearInterval(imageCarouselRef.current);
+      }
+      return;
+    }
+
+    imageCarouselRef.current = setInterval(() => {
+      setImageIndex((prev) => (prev + 1) % currentInitiative.images.length);
+    }, 4000);
+
+    return () => {
+      if (imageCarouselRef.current) {
+        clearInterval(imageCarouselRef.current);
+      }
+    };
+  }, [currentInitiative.images.length]);
+
+  // Navigate between initiatives
+  const paginate = useCallback((newDirection) => {
+    if (isTransitioning.current) return;
+
+    isTransitioning.current = true;
+    setDirection(newDirection);
+
+    setCurrent(
+      (prev) => (prev + newDirection + initiatives.length) % initiatives.length
+    );
+
+    setTimeout(() => {
+      isTransitioning.current = false;
+    }, 800);
+  }, []);
+
+  // Initiative auto-rotation (every 5 seconds)
+  useEffect(() => {
+    autoplayRef.current = setInterval(() => paginate(1), 5000);
+
+    return () => {
+      if (autoplayRef.current) {
+        clearInterval(autoplayRef.current);
+      }
+    };
+  }, [paginate]);
+
+  // Keyboard navigation removed - auto-slide only
+
+  const slideVariants = {
+    enter: (dir) => ({
+      x: dir > 0 ? "100%" : "-100%",
+      opacity: 0,
+      scale: 0.95,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      scale: 1,
+      transition: {
+        x: {
+          type: "spring",
+          stiffness: 200,
+          damping: 30,
+          mass: 0.8,
+        },
+        opacity: { duration: 0.4 },
+        scale: { duration: 0.4 },
+      },
+    },
+    exit: (dir) => ({
+      x: dir > 0 ? "-100%" : "100%",
+      opacity: 0,
+      scale: 0.95,
+      transition: {
+        x: {
+          type: "spring",
+          stiffness: 200,
+          damping: 30,
+          mass: 0.8,
+        },
+        opacity: { duration: 0.3 },
+        scale: { duration: 0.3 },
+      },
+    }),
+  };
+
+  const PhotoFrame = ({ delay, rotate, position, size, zIndex }) => (
+    <motion.div
+      initial={{ opacity: 0, rotate: rotate * 2, y: 30 }}
+      animate={{ opacity: 1, rotate, y: 0 }}
+      transition={{
+        delay,
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      whileHover={{
+        rotate: rotate / 2,
+        scale: 1.02,
+        y: -8,
+        zIndex: 40,
+      }}
+      className={`absolute ${position} ${size} ${zIndex} cursor-pointer group`}
     >
-      {/* subtle background glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.08),transparent_60%)] pointer-events-none" />
-
-      <div className="relative container mx-auto px-4">
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-28"
+      <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-slate-900/20">
+        <div
+          className={`relative ${
+            size === "w-[52%]" ? "aspect-[4/3]" : "aspect-[3/4]"
+          } overflow-hidden bg-slate-100`}
         >
-          <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white shadow-sm text-sm font-semibold text-emerald-700 uppercase tracking-wider">
-            <Sparkles className="w-4 h-4" />
-            Our Initiatives
-          </span>
-        </motion.div>
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={`photo-${current}-${imageIndex}`}
+              src={currentInitiative.images[imageIndex]}
+              alt={`${currentInitiative.title} - Image ${imageIndex + 1}`}
+              className="w-full h-full object-cover"
+              initial={{
+                opacity: 0,
+                scale: 1.1,
+              }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.95,
+              }}
+              transition={{
+                duration: 0.6,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            />
+          </AnimatePresence>
+        </div>
+      </div>
+    </motion.div>
+  );
 
-        {/* CONTINUOUS INITIATIVES FLOW */}
-        <div className="flex flex-col gap-36">
-          {initiatives.map((item, index) => {
-            const imageLeft = index % 2 === 0;
+  return (
+    <>
+      {/* Initiatives Carousel Section */}
+      <section
+        id="initiatives"
+        className="relative pt-32 pb-16 bg-gradient-to-br from-slate-50 via-white to-slate-100 overflow-hidden"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at 20% 30%, ${currentInitiative.accentColor}08 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, ${currentInitiative.accentColor}05 0%, transparent 50%)
+          `,
+        }}
+        aria-label="Our Initiatives"
+      >
+        <div className="absolute inset-0 opacity-[0.015] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=')] pointer-events-none" />
 
-            return (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 40 }}
+        <div className="relative container mx-auto px-4 max-w-7xl">
+          {/* Section Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-24"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-white/80 backdrop-blur-xl shadow-lg border border-white/60 text-sm font-bold text-slate-700 uppercase tracking-[0.15em]"
+            >
+              <Sparkles className="w-5 h-5 text-amber-500" />
+              Our Initiatives
+            </motion.div>
+          </motion.div>
+
+          {/* Carousel Container */}
+          <div className="relative">
+            <div
+              className="relative overflow-hidden rounded-3xl"
+              role="region"
+              aria-label="Initiatives carousel"
+              aria-live="polite"
+            >
+              <AnimatePresence initial={false} custom={direction} mode="popLayout">
+                <motion.div
+                  key={current}
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  className="relative w-full"
+                >
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 p-8 lg:p-12 items-center min-h-[600px]">
+                    {/* Photo Collage */}
+                    <motion.div
+                      className="relative order-2 lg:order-1 h-[520px] lg:h-[620px]"
+                      initial={{ opacity: 0, x: -40 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2, duration: 0.6 }}
+                    >
+                      <div
+                        className="absolute inset-0 rounded-3xl opacity-5"
+                        style={{
+                          background: `radial-gradient(circle at 30% 40%, ${currentInitiative.accentColor} 0%, transparent 70%)`,
+                        }}
+                        aria-hidden="true"
+                      />
+
+                      <PhotoFrame
+                        delay={0.3}
+                        rotate={-4}
+                        position="left-[2%] top-[5%]"
+                        size="w-[52%]"
+                        zIndex="z-10"
+                      />
+
+                      <PhotoFrame
+                        delay={0.5}
+                        rotate={3}
+                        position="right-[5%] top-[25%]"
+                        size="w-[62%]"
+                        zIndex="z-20"
+                      />
+
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.7, y: -20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ delay: 0.8, duration: 0.6, type: "spring" }}
+                        className="absolute -top-4 left-1/2 -translate-x-1/2 z-30"
+                      >
+                        <div
+                          className={`${currentInitiative.badge} text-white px-8 py-3.5 rounded-full shadow-2xl font-bold text-sm tracking-wide backdrop-blur-sm`}
+                          style={{
+                            boxShadow: `0 10px 30px ${currentInitiative.accentColor}50, 0 4px 10px rgba(0,0,0,0.15)`,
+                          }}
+                        >
+                          {currentInitiative.tag}
+                        </div>
+                      </motion.div>
+                    </motion.div>
+
+                    {/* Content */}
+                    <motion.div
+                      className="space-y-8 order-1 lg:order-2"
+                      initial={{ opacity: 0, y: 40 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3, duration: 0.6 }}
+                    >
+                      <div className="space-y-4">
+                        <h2 className="text-5xl lg:text-6xl xl:text-7xl font-black text-slate-900 leading-[0.95] tracking-tight">
+                          {currentInitiative.title.split(" ").map((word, i) => (
+                            <motion.span
+                              key={i}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.4 + i * 0.1, duration: 0.5 }}
+                              className="block"
+                            >
+                              {word}
+                            </motion.span>
+                          ))}
+                        </h2>
+                      </div>
+
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.7, duration: 0.6 }}
+                        className="text-slate-600 text-lg lg:text-xl leading-relaxed max-w-xl"
+                      >
+                        {currentInitiative.description}
+                      </motion.p>
+
+                      {/* CTA Button */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.9, duration: 0.6 }}
+                      >
+                        <Button
+                          asChild
+                          size="lg"
+                          className="group relative overflow-hidden bg-slate-900 hover:bg-slate-800 text-white px-8 py-6 rounded-full text-base font-semibold shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105"
+                          style={{
+                            boxShadow: `0 10px 40px ${currentInitiative.accentColor}30`,
+                          }}
+                        >
+                          <a href={currentInitiative.link}>
+                            <span className="relative z-10 flex items-center gap-2">
+                              Learn More
+                              <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                            </span>
+                            <div
+                              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                              style={{
+                                background: `linear-gradient(135deg, ${currentInitiative.accentColor}20, transparent)`,
+                              }}
+                            />
+                          </a>
+                        </Button>
+                      </motion.div>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Screen Reader Announcement */}
+            <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+              Showing initiative {current + 1} of {initiatives.length}: {currentInitiative.title}
+            </div>
+
+            {/* Dots Indicator */}
+            <div className="flex items-center justify-center gap-3 mt-8">
+              {initiatives.map((_, index) => (
+                <div
+                  key={index}
+                  className={`rounded-full transition-all duration-300 ${
+                    index === current ? "w-8 h-2" : "w-2 h-2"
+                  }`}
+                  style={{
+                    backgroundColor: index === current ? currentInitiative.accentColor : "#cbd5e1",
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section - Soft Green Ombre Background */}
+      <section className="relative py-16 md:py-20 overflow-hidden">
+        {/* Multi-layer gradient background for soft ombre effect */}
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/60 via-teal-50/40 to-green-100/50" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-emerald-50/30 via-transparent to-teal-100/40" />
+        <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-green-50/20 to-emerald-100/30" />
+        
+        {/* Subtle radial glow effects */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-200/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-200/20 rounded-full blur-3xl" />
+        
+        <div className="relative container mx-auto px-4 max-w-5xl">
+          {/* Clean white box with subtle elevation */}
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-lg border border-emerald-100/50">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-center space-y-12"
+            >
+              <motion.h2 
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="grid grid-cols-1 md:grid-cols-2 items-center gap-20"
+                transition={{ delay: 0.2, duration: 0.7 }}
+                className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900"
               >
-                {/* IMAGE */}
-                <div
-                  className={`${
-                    imageLeft ? "md:order-1" : "md:order-2"
-                  } h-80 md:h-[440px]`}
-                >
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover rounded-2xl"
-                  />
-                </div>
+                Be Part of the Change
+              </motion.h2>
 
-                {/* CONTENT */}
-                <div
-                  className={`${
-                    imageLeft ? "md:order-2" : "md:order-1"
-                  }`}
-                >
-                  {/* CATEGORY PILL */}
-                  <span
-                    className={`inline-block px-6 py-2 rounded-full text-sm font-semibold text-white ${item.badge} mb-6`}
-                  >
-                    {item.tag}
-                  </span>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4, duration: 0.7 }}
+                className="text-base md:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed"
+              >
+                Whether you want to volunteer on the ground or collaborate as an organization, there's a
+                meaningful role for you in our journey toward a more inclusive and responsible society.
+              </motion.p>
 
-                  <h3 className="text-3xl md:text-4xl font-bold mb-6 leading-tight">
-                    {item.title}
-                  </h3>
-
-                  <p className="text-slate-700 text-lg leading-relaxed mb-5">
-                    {item.description}
-                  </p>
-
-                  <p className="text-slate-600 text-base leading-relaxed mb-10">
-                    Through consistent on-ground efforts, community participation,
-                    and awareness-building activities, this initiative focuses on
-                    long-term social impact and collective responsibility.
-                  </p>
-
-                  {/* LEARN MORE BUTTON */}
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className={`rounded-full px-10 transition-all duration-300 ${item.hover}`}
-                  >
-                    Learn More <ExternalLink className="w-4 h-4 ml-2" />
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.6, duration: 0.7 }}
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4"
+              >
+                <motion.div whileHover={{ scale: 1.03, y: -2 }} whileTap={{ scale: 0.98 }}>
+                  <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-6 rounded-xl font-semibold shadow-lg min-w-[220px]">
+                    <HandHeart className="w-5 h-5 mr-2" />
+                    Join as Volunteer
                   </Button>
-                </div>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.03, y: -2 }} whileTap={{ scale: 0.98 }}>
+                  <Button size="lg" variant="outline" className="bg-white hover:bg-slate-50 border-2 border-slate-300 text-slate-700 px-8 py-6 rounded-xl font-semibold shadow-md min-w-[220px]">
+                    <Handshake className="w-5 h-5 mr-2" />
+                    Be a Partner
+                  </Button>
+                </motion.div>
               </motion.div>
-            );
-          })}
-        </div>
-
-        {/* CTA */}
-        {/* Elegant Center Divider */}
-
-      <motion.div
-  initial={{ opacity: 0, y: 30 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true }}
-  transition={{ duration: 0.7 }}
-  className="relative mt-24 max-w-4xl mx-auto bg-white/60 backdrop-blur-md rounded-3xl p-14 shadow-xl border border-white/40 text-center"
->
-          <h3 className="text-3xl md:text-4xl font-bold mb-6">
-            Be Part of the Change
-          </h3>
-
-          <p className="text-muted-foreground mb-14 leading-relaxed text-lg">
-            Whether you want to volunteer on the ground or collaborate as an
-            organization, there’s a meaningful role for you in our journey
-            toward a more inclusive and responsible society.
-          </p>
-
-          <div className="flex flex-col sm:flex-row justify-center gap-6">
-            <Button className="rounded-full px-12 h-14 text-lg gap-2 shadow-lg">
-              🙌 Join as Volunteer
-            </Button>
-
-            <Button
-              variant="outline"
-              className="rounded-full px-12 h-14 text-lg gap-2 border-emerald-600 text-emerald-700 hover:bg-emerald-600 hover:text-white"
-            >
-              <Heart className="w-5 h-5" />
-              Be a Partner
-            </Button>
+            </motion.div>
           </div>
-        </motion.div>
-      </div>
-    </section>
+        </div>
+      </section>
+    </>
   );
 };
 
