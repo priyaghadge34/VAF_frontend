@@ -3,13 +3,14 @@ import { ArrowDown, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroBg from "@/assets/20230423080147_IMG_6901-scaled.jpg";
 
+
 const HeroSection = () => {
   return (
     <section
       id="home"
       className="relative h-screen w-full overflow-hidden flex items-center justify-center"
     >
-      {/* Background image */}
+      {/* Background */}
       <div className="absolute inset-0">
         <img
           src={heroBg}
@@ -17,70 +18,102 @@ const HeroSection = () => {
           className="w-full h-full object-cover object-[center_5%] scale-105"
         />
 
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/40" />
-
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/60" />
-
-        {/* Vignette */}
-        <div className="absolute inset-0 shadow-[inset_0_0_120px_rgba(0,0,0,0.55)]" />
+        {/* Clean SaaS-style overlay */}
+        <div className="absolute inset-0 bg-black/55" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/40 to-black/70" />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 text-center">
+      <div className="relative z-10 container mx-auto px-6 text-center">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="max-w-3xl mx-auto"
+          className="max-w-4xl mx-auto"
         >
-          <span className="inline-block px-4 py-1.5 rounded-full bg-primary/20 text-primary-foreground text-sm font-body font-medium mb-6 backdrop-blur-sm border border-primary-foreground/20">
-            ✨ Empowering Communities, Inspiring Change
-          </span>
+          {/* SaaS Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-8">
+            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+            Empowering Communities Through Action
+          </div>
 
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-primary-foreground leading-tight mb-6">
-            Vinit Abhedya <span className="text-mint">Foundation</span>
+          {/* Heading */}
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 tracking-tight">
+            Vinit Abhedya
+            <span className="block text-emerald-400">
+              Foundation
+            </span>
           </h1>
 
-          <p className="text-lg md:text-xl text-primary-foreground/80 font-body max-w-2xl mx-auto mb-10">
-            Empowering communities through environmental action, women's
-            empowerment, and the joy of shared knowledge. Together, we create
-            lasting change.
+          {/* Subtext */}
+          <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-12 leading-relaxed">
+            Driving measurable impact through environmental action,
+            women empowerment, and community-led transformation.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          {/* SaaS-Style CTA */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
+
+            {/* Primary CTA */}
             <a href="#initiatives">
               <Button
                 size="lg"
-                className="gradient-primary text-primary-foreground rounded-full px-8 h-12 text-base font-body"
+                className="
+                  relative
+                  rounded-full
+                  px-10
+                  h-14
+                  text-base
+                  font-semibold
+                  bg-emerald-500
+                  hover:bg-emerald-600
+                  text-white
+                  transition-all duration-300
+                  shadow-xl
+                  hover:shadow-emerald-500/40
+                  hover:-translate-y-1
+                "
               >
-                Explore Our Initiatives
+                Explore Initiatives
               </Button>
             </a>
 
+            {/* Secondary CTA */}
             <a href="#donate">
               <Button
                 size="lg"
                 variant="outline"
-                className="rounded-full px-8 h-12 text-base font-body border-primary-foreground/40 text-primary-foreground bg-transparent hover:bg-primary-foreground/10"
+                className="
+                  rounded-full
+                  px-10
+                  h-14
+                  text-base
+                  font-semibold
+                  border-white/30
+                  text-white
+                  bg-white/5
+                  backdrop-blur-md
+                  hover:bg-white/15
+                  hover:-translate-y-1
+                  transition-all duration-300
+                  gap-2
+                "
               >
-                <Heart className="w-4 h-4 mr-2" />
+                <Heart className="w-4 h-4" />
                 Support Us
               </Button>
             </a>
           </div>
 
-          {/* Scroll indicator BELOW buttons */}
+          {/* Scroll indicator */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2, duration: 0.6 }}
-            className="mt-12 flex justify-center"
+            className="mt-16 flex justify-center"
           >
-            <a href="#about" aria-label="Scroll to About section">
-              <ArrowDown className="w-6 h-6 text-primary-foreground/70 animate-bounce" />
+            <a href="#impact" aria-label="Scroll to About section">
+              <ArrowDown className="w-6 h-6 text-white/60 animate-bounce" />
             </a>
           </motion.div>
         </motion.div>

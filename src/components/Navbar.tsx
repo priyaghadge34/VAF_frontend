@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 
+
 import logo from "@/assets/Logo.png";
 
 const navLinks = [
@@ -15,15 +16,15 @@ const navLinks = [
 const initiatives = [
   {
     label: "Sambhajinagar Ploggers",
-    href: "/initiatives/sambhajinagar-ploggers",
+    href: "/Ploggers",
   },
   {
     label: "Laal Bindi",
-    href: "/initiatives/laal-bindi",
+    href: "/laal-bindi",
   },
   {
     label: "Social Shelf",
-    href: "/initiatives/social-shelf",
+    href: "/social-shelf",
   },
 ];
 
