@@ -6,7 +6,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 3️⃣ DESIGN TOKENS */
+/* 3️⃣ DESIGN TOKENS + GLOBAL BASE */
 @layer base {
   :root {
     --background: 155 10% 97%;
@@ -52,17 +52,20 @@
 
     --shadow-card: 0 4px 24px -4px hsl(152 100% 24% / 0.08);
     --shadow-elevated: 0 12px 40px -8px hsl(152 100% 24% / 0.12);
+
     --gradient-hero: linear-gradient(
       135deg,
       hsl(155 42% 87%) 0%,
       hsl(214 90% 88%) 50%,
       hsl(155 42% 87%) 100%
     );
+
     --gradient-primary: linear-gradient(
       135deg,
       hsl(152 100% 24%),
       hsl(158 30% 50%)
     );
+
     --gradient-accent: linear-gradient(
       135deg,
       hsl(202 34% 60%),
@@ -79,15 +82,12 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  /* ✅ FIX FOR FIXED NAVBAR SCROLL OFFSET */
+  /* 🔥 GLOBAL SCROLL FIX FOR FIXED NAVBAR */
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 100px; /* adjust if navbar height changes */
+    scroll-padding-top: 96px; /* matches ~h-20 navbar with safe spacing */
   }
-}
 
-/* 4️⃣ BASE STYLES */
-@layer base {
   * {
     @apply border-border;
   }
@@ -101,7 +101,7 @@
   }
 }
 
-/* 5️⃣ UTILITIES */
+/* 4️⃣ UTILITIES */
 @layer utilities {
   .font-display {
     font-family: var(--font-display);
