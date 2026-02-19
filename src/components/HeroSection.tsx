@@ -14,7 +14,7 @@ const HeroSection = () => {
         <img
           src={heroBg}
           alt="Volunteers planting trees"
-          className="w-full h-full object-cover object-[center_30%] scale-105"
+          className="w-full h-full object-cover object-[center_5%] scale-105"
         />
 
         {/* Dark overlay */}
