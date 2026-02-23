@@ -96,11 +96,33 @@ const Footer = () => {
                 Social
               </h4>
               <div className="flex gap-4">
-                <Facebook className="w-5 h-5 hover:text-white cursor-pointer" />
-                <Instagram className="w-5 h-5 hover:text-white cursor-pointer" />
-                <Twitter className="w-5 h-5 hover:text-white cursor-pointer" />
-                <Youtube className="w-5 h-5 hover:text-white cursor-pointer" />
-              </div>
+  <a
+    href="https://www.facebook.com/share/1DnSdfrGCj/"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <Facebook className="w-5 h-5 hover:text-white cursor-pointer" />
+  </a>            
+        <a
+    href="https://www.instagram.com/vinitabhedyafoundation?igsh=MXN2cDI3cTNpcGRxeA=="
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <Instagram className="w-5 h-5 hover:text-white cursor-pointer" />
+  </a>
+
+  <a href="https://x.com/MH20PLOGGERS" 
+  target="_blank"
+  rel="noopener noreferrer">
+    <Twitter className="w-5 h-5 hover:text-white cursor-pointer" />
+  </a>
+
+  <a href="https://youtube.com/@vinitabhedyafoundation?si=f0kLwicxugGsuax3"
+   target="_blank"
+    rel="noopener noreferrer">
+    <Youtube className="w-5 h-5 hover:text-white cursor-pointer" />
+  </a>
+</div>
             </div>
 
             {/* CONTACT */}

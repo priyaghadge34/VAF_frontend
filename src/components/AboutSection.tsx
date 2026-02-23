@@ -3,7 +3,7 @@ import aboutImg from "@/assets/20210905100549_IMG_5103-1-1-scaled.jpg";
 
 const AboutSection = () => {
   return (
-    <section id="about" className="pt-12 pb-20 bg-card">
+    <section id="about"   className="pt-16 pb-20 bg-white scroll-mt-22" >
       <div className="container mx-auto px-4">
         {/* Section Intro */}
         <motion.div

@@ -79,7 +79,7 @@ const HeroSection = () => {
             transition={{ delay: 1.2, duration: 0.6 }}
             className="mt-12 flex justify-center"
           >
-            <a href="#about" aria-label="Scroll to About section">
+            <a href="#impact" aria-label="Scroll to About section">
               <ArrowDown className="w-6 h-6 text-primary-foreground/70 animate-bounce" />
             </a>
           </motion.div>
