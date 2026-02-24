@@ -186,32 +186,34 @@ const Footer = () => {
               <h4 className="text-sm font-semibold text-white mb-6 uppercase tracking-widest">
                 Social
               </h4>
+              <div className="flex gap-4">
+  <a
+    href="https://www.facebook.com/share/1DnSdfrGCj/"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <Facebook className="w-5 h-5 hover:text-white cursor-pointer" />
+  </a>            
+        <a
+    href="https://www.instagram.com/vinitabhedyafoundation?igsh=MXN2cDI3cTNpcGRxeA=="
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <Instagram className="w-5 h-5 hover:text-white cursor-pointer" />
+  </a>
 
-              <div className="flex gap-5">
-                {socials.map((social, index) => {
-                  const Icon = social.icon;
-                  return (
-                    <motion.a
-                      key={index}
-                      href={social.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      whileHover={{ y: -6 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                      className="
-                        w-10 h-10
-                        flex items-center justify-center
-                        rounded-full
-                        bg-white/5
-                        backdrop-blur-md
-                        cursor-pointer
-                      "
-                    >
-                      <Icon className="w-4 h-4 text-gray-400 transition-colors duration-300 hover:text-white" />
-                    </motion.a>
-                  );
-                })}
-              </div>
+  <a href="https://x.com/MH20PLOGGERS" 
+  target="_blank"
+  rel="noopener noreferrer">
+    <Twitter className="w-5 h-5 hover:text-white cursor-pointer" />
+  </a>
+
+  <a href="https://youtube.com/@vinitabhedyafoundation?si=f0kLwicxugGsuax3"
+   target="_blank"
+    rel="noopener noreferrer">
+    <Youtube className="w-5 h-5 hover:text-white cursor-pointer" />
+  </a>
+</div>
             </div>
 
             {/* CONTACT */}

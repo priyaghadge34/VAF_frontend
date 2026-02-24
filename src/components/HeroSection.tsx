@@ -113,7 +113,7 @@ const HeroSection = () => {
             className="mt-16 flex justify-center"
           >
             <a href="#impact" aria-label="Scroll to About section">
-              <ArrowDown className="w-6 h-6 text-white/60 animate-bounce" />
+              <ArrowDown className="w-6 h-6 text-primary-foreground/70 animate-bounce" />
             </a>
           </motion.div>
         </motion.div>
